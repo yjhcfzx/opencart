@@ -1,152 +1,195 @@
 <?php
+
 class ControllerCommonHeader extends Controller {
-	public function index() {
-		// Analytics
-		$this->load->model('extension/extension');
 
-		$data['analytics'] = array();
+    public function index() {
+        // Analytics
+        $this->load->model('extension/extension');
 
-		$analytics = $this->model_extension_extension->getExtensions('analytics');
+        $data['analytics'] = array();
 
-		foreach ($analytics as $analytic) {
-			if ($this->config->get($analytic['code'] . '_status')) {
-				$data['analytics'][] = $this->load->controller('analytics/' . $analytic['code'], $this->config->get($analytic['code'] . '_status'));
-			}
-		}
+        $analytics = $this->model_extension_extension->getExtensions('analytics');
 
-		if ($this->request->server['HTTPS']) {
-			$server = $this->config->get('config_ssl');
-		} else {
-			$server = $this->config->get('config_url');
-		}
+        foreach ($analytics as $analytic) {
+            if ($this->config->get($analytic['code'] . '_status')) {
+                $data['analytics'][] = $this->load->controller('analytics/' . $analytic['code'], $this->config->get($analytic['code'] . '_status'));
+            }
+        }
 
-		if (is_file(DIR_IMAGE . $this->config->get('config_icon'))) {
-			$this->document->addLink($server . 'image/' . $this->config->get('config_icon'), 'icon');
-		}
+        if ($this->request->server['HTTPS']) {
+            $server = $this->config->get('config_ssl');
+        } else {
+            $server = $this->config->get('config_url');
+        }
 
-		$data['title'] = $this->document->getTitle();
+        if (is_file(DIR_IMAGE . $this->config->get('config_icon'))) {
+            $this->document->addLink($server . 'image/' . $this->config->get('config_icon'), 'icon');
+        }
 
-		$data['base'] = $server;
-		$data['description'] = $this->document->getDescription();
-		$data['keywords'] = $this->document->getKeywords();
-		$data['links'] = $this->document->getLinks();
-		$data['styles'] = $this->document->getStyles();
-		$data['scripts'] = $this->document->getScripts();
-		$data['lang'] = $this->language->get('code');
-		$data['direction'] = $this->language->get('direction');
+        $data['title'] = $this->document->getTitle();
 
-		$data['name'] = $this->config->get('config_name');
+        $data['base'] = $server;
+        $data['description'] = $this->document->getDescription();
+        $data['keywords'] = $this->document->getKeywords();
+        $data['links'] = $this->document->getLinks();
+        $data['styles'] = $this->document->getStyles();
+        $data['scripts'] = $this->document->getScripts();
+        $data['lang'] = $this->language->get('code');
+        $data['direction'] = $this->language->get('direction');
 
-		if (is_file(DIR_IMAGE . $this->config->get('config_logo'))) {
-			$data['logo'] = $server . 'image/' . $this->config->get('config_logo');
-		} else {
-			$data['logo'] = '';
-		}
+        $data['name'] = $this->config->get('config_name');
 
-		$this->load->language('common/header');
+        if (is_file(DIR_IMAGE . $this->config->get('config_logo'))) {
+            $data['logo'] = $server . 'image/' . $this->config->get('config_logo');
+        } else {
+            $data['logo'] = '';
+        }
 
-		$data['text_home'] = $this->language->get('text_home');
+        $this->load->language('common/header');
 
-		// Wishlist
-		if ($this->customer->isLogged()) {
-			$this->load->model('account/wishlist');
+        $data['text_home'] = $this->language->get('text_home');
 
-			$data['text_wishlist'] = sprintf($this->language->get('text_wishlist'), $this->model_account_wishlist->getTotalWishlist());
-		} else {
-			$data['text_wishlist'] = sprintf($this->language->get('text_wishlist'), (isset($this->session->data['wishlist']) ? count($this->session->data['wishlist']) : 0));
-		}
+        // Wishlist
+        if ($this->customer->isLogged()) {
+            $this->load->model('account/wishlist');
 
-		$data['text_shopping_cart'] = $this->language->get('text_shopping_cart');
-		$data['text_logged'] = sprintf($this->language->get('text_logged'), $this->url->link('account/account', '', true), $this->customer->getFirstName(), $this->url->link('account/logout', '', true));
+            $data['text_wishlist'] = sprintf($this->language->get('text_wishlist'), $this->model_account_wishlist->getTotalWishlist());
+        } else {
+            $data['text_wishlist'] = sprintf($this->language->get('text_wishlist'), (isset($this->session->data['wishlist']) ? count($this->session->data['wishlist']) : 0));
+        }
 
-		$data['text_account'] = $this->language->get('text_account');
-		$data['text_register'] = $this->language->get('text_register');
-		$data['text_login'] = $this->language->get('text_login');
-		$data['text_order'] = $this->language->get('text_order');
-		$data['text_transaction'] = $this->language->get('text_transaction');
-		$data['text_download'] = $this->language->get('text_download');
-		$data['text_logout'] = $this->language->get('text_logout');
-		$data['text_checkout'] = $this->language->get('text_checkout');
-		$data['text_category'] = $this->language->get('text_category');
-		$data['text_all'] = $this->language->get('text_all');
+        $data['text_shopping_cart'] = $this->language->get('text_shopping_cart');
+        $data['text_logged'] = sprintf($this->language->get('text_logged'), $this->url->link('account/account', '', true), $this->customer->getFirstName(), $this->url->link('account/logout', '', true));
 
-		$data['home'] = $this->url->link('common/home');
-		$data['wishlist'] = $this->url->link('account/wishlist', '', true);
-		$data['logged'] = $this->customer->isLogged();
-		$data['account'] = $this->url->link('account/account', '', true);
-		$data['register'] = $this->url->link('account/register', '', true);
-		$data['login'] = $this->url->link('account/login', '', true);
-		$data['order'] = $this->url->link('account/order', '', true);
-		$data['transaction'] = $this->url->link('account/transaction', '', true);
-		$data['download'] = $this->url->link('account/download', '', true);
-		$data['logout'] = $this->url->link('account/logout', '', true);
-		$data['shopping_cart'] = $this->url->link('checkout/cart');
-		$data['checkout'] = $this->url->link('checkout/checkout', '', true);
-		$data['contact'] = $this->url->link('information/contact');
-		$data['telephone'] = $this->config->get('config_telephone');
+        $data['text_account'] = $this->language->get('text_account');
+        $data['text_register'] = $this->language->get('text_register');
+        $data['text_login'] = $this->language->get('text_login');
+        $data['text_order'] = $this->language->get('text_order');
+        $data['text_transaction'] = $this->language->get('text_transaction');
+        $data['text_download'] = $this->language->get('text_download');
+        $data['text_logout'] = $this->language->get('text_logout');
+        $data['text_checkout'] = $this->language->get('text_checkout');
+        $data['text_category'] = $this->language->get('text_category');
+        $data['text_all'] = $this->language->get('text_all');
 
-		// Menu
-		$this->load->model('catalog/category');
+        $data['home'] = $this->url->link('common/home');
+        $data['wishlist'] = $this->url->link('account/wishlist', '', true);
+        $data['logged'] = $this->customer->isLogged();
+        $data['account'] = $this->url->link('account/account', '', true);
+        $data['register'] = $this->url->link('account/register', '', true);
+        $data['login'] = $this->url->link('account/login', '', true);
+        $data['order'] = $this->url->link('account/order', '', true);
+        $data['transaction'] = $this->url->link('account/transaction', '', true);
+        $data['download'] = $this->url->link('account/download', '', true);
+        $data['logout'] = $this->url->link('account/logout', '', true);
+        $data['shopping_cart'] = $this->url->link('checkout/cart');
+        $data['checkout'] = $this->url->link('checkout/checkout', '', true);
+        $data['contact'] = $this->url->link('information/contact');
+        $data['telephone'] = $this->config->get('config_telephone');
 
-		$this->load->model('catalog/product');
+        // Menu
+        $this->load->model('catalog/category');
 
-		$data['categories'] = array();
+        $this->load->model('catalog/product');
 
-		$categories = $this->model_catalog_category->getCategories(0);
-                
-		foreach ($categories as $category) {
-			if ($category['top']) {
-				// Level 2
-				$children_data = array();
+        $data['categories'] = array();
+        $categories = $this->generateCategory();
 
-				$children = $this->model_catalog_category->getCategories($category['category_id']);
+        $data['categories'] = $this->printCategory($categories) ;
 
-				foreach ($children as $child) {
-					$filter_data = array(
-						'filter_category_id'  => $child['category_id'],
+        $data['language'] = $this->load->controller('common/language');
+        $data['currency'] = $this->load->controller('common/currency');
+        $data['search'] = $this->load->controller('common/search');
+        $data['cart'] = $this->load->controller('common/cart');
+
+        // For page specific css
+        if (isset($this->request->get['route'])) {
+            if (isset($this->request->get['product_id'])) {
+                $class = '-' . $this->request->get['product_id'];
+            } elseif (isset($this->request->get['path'])) {
+                $class = '-' . $this->request->get['path'];
+            } elseif (isset($this->request->get['manufacturer_id'])) {
+                $class = '-' . $this->request->get['manufacturer_id'];
+            } elseif (isset($this->request->get['information_id'])) {
+                $class = '-' . $this->request->get['information_id'];
+            } else {
+                $class = '';
+            }
+
+            $data['class'] = str_replace('/', '-', $this->request->get['route']) . $class;
+        } else {
+            $data['class'] = 'common-home';
+        }
+
+        return $this->load->view('common/header', $data);
+    }
+
+    private function generateCategory($root_id = 0) {
+        $rst = array();
+        $categories = $this->model_catalog_category->getCategories($root_id);
+        
+        foreach ($categories as $category) {
+               if ($category['top']) {
+                   $menuItem = array(
+                    'name' => $category['name'],
+                    'column' => $category['column'] ? $category['column'] : 1,
+                    'href' => $this->url->link('product/category', 'path=' . $category['category_id'])
+                );
+               $children_data = $this->generateCategory($category['category_id']);
+               $menuItem['children'] = $children_data;
+               if($this->config->get('config_product_count')){
+                     $filter_data = array(
+						'filter_category_id'  => $category['category_id'],
 						'filter_sub_category' => true
 					);
+                       $menuItem['name']  = $category['name'] .  ' (' . $this->model_catalog_product->getTotalProducts($filter_data) . ')' ;
+               }
+             
+              
+               $rst[] =  $menuItem;
+               }
+         
+        }
+        return $rst;
+    }
+    private function printCategory($categories, $is_sub = 0){
+        $html = '';
+          foreach ($categories as $category) { 
+         if ($category['children']) { 
+       $html .= '<li class="' . ( $is_sub ? "dropdown-submenu" : ""). '"><a href="' . $category['href'] . ' class="dropdown-toggle" data-toggle="dropdown">' . $category['name']
+               . ($is_sub ? "" : '<b class="caret"></b>')  .  '</a>
+             <ul class="dropdown-menu">';
+              foreach (array_chunk($category['children'], ceil(count($category['children']) / $category['column'])) as $children) {
 
-					$children_data[] = array(
-						'name'  => $child['name'] . ($this->config->get('config_product_count') ? ' (' . $this->model_catalog_product->getTotalProducts($filter_data) . ')' : ''),
-						'href'  => $this->url->link('product/category', 'path=' . $category['category_id'] . '_' . $child['category_id'])
-					);
-				}
+                $html .=   $this->printCategory($children,1) ;
+//                foreach ($children as $child) {
+//                    $html .= '<li><a href="' . $child['href'] . '">' . $child['name'] . '</a></li>';
+//                 } 
+         
+               } 
+           $html .= '</ul>
+        </li>';
+        } else { 
+        $html .= '<li><a href="' . $category['href'] . '">' . $category['name'] . '</a></li>';
+         } 
+        } 
+        return $html;
+    }
 
-				// Level 1
-				$data['categories'][] = array(
-					'name'     => $category['name'],
-					'children' => $children_data,
-					'column'   => $category['column'] ? $category['column'] : 1,
-					'href'     => $this->url->link('product/category', 'path=' . $category['category_id'])
-				);
-			}
-		}
-
-		$data['language'] = $this->load->controller('common/language');
-		$data['currency'] = $this->load->controller('common/currency');
-		$data['search'] = $this->load->controller('common/search');
-		$data['cart'] = $this->load->controller('common/cart');
-
-		// For page specific css
-		if (isset($this->request->get['route'])) {
-			if (isset($this->request->get['product_id'])) {
-				$class = '-' . $this->request->get['product_id'];
-			} elseif (isset($this->request->get['path'])) {
-				$class = '-' . $this->request->get['path'];
-			} elseif (isset($this->request->get['manufacturer_id'])) {
-				$class = '-' . $this->request->get['manufacturer_id'];
-			} elseif (isset($this->request->get['information_id'])) {
-				$class = '-' . $this->request->get['information_id'];
-			} else {
-				$class = '';
-			}
-
-			$data['class'] = str_replace('/', '-', $this->request->get['route']) . $class;
-		} else {
-			$data['class'] = 'common-home';
-		}
-
-		return $this->load->view('common/header', $data);
-	}
+//    private function generateChildren($category){
+//                $children_data = array();
+//                $children = $this->model_catalog_category->getCategories($category['category_id']);
+//
+//                foreach ($children as $child) {
+//                    $filter_data = array(
+//                        'filter_category_id' => $child['category_id'],
+//                        'filter_sub_category' => true
+//                    );
+//
+//                    $children_data[] = array(
+//                        'name' => $child['name'] . ($this->config->get('config_product_count') ? ' (' . $this->model_catalog_product->getTotalProducts($filter_data) . ')' : ''),
+//                        'href' => $this->url->link('product/category', 'path=' . $category['category_id'] . '_' . $child['category_id'])
+//                    );
+//                }
+//    }
 }

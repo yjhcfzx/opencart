@@ -52,3 +52,5 @@
 
 # IDE Project files
 /.idea
+/upload/admin/www/
+/upload/www/
