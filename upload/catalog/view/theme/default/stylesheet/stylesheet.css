@@ -794,3 +794,9 @@ h2.price {
     -moz-border-radius: 6px 0 6px 6px;
     border-radius: 6px 0 6px 6px;
 }
+#logo  a {
+    font-size:2em;
+}
+#logo img{
+    display:inline-block;
+}
