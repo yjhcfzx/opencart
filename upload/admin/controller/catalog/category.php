@@ -585,8 +585,8 @@ class ControllerCatalogCategory extends Controller {
 				'filter_name' => $this->request->get['filter_name'],
 				'sort'        => 'name',
 				'order'       => 'ASC',
-				'start'       => 0,
-				'limit'       => 5
+				//'start'       => 0,
+				//'limit'       => 20
 			);
 
 			$results = $this->model_catalog_category->getCategories($filter_data);
